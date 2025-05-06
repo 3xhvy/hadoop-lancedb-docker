@@ -1,0 +1,26 @@
+services:
+  hadoop:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    image: custom-hadoop:latest
+    container_name: custom-hadoop
+    ports:
+      - "9870:9870"   # NameNode UI
+      - "9864:9864"   # DataNode UI
+      - "9000:9000"   # HDFS
+      - "8088:8088"   # YARN ResourceManager UI
+    environment:
+      - HADOOP_MODE=single
+      - HDFS_NAMENODE_HTTP_PORT_NUMBER=9870
+      - HDFS_DATANODE_HTTP_PORT_NUMBER=9864
+      - YARN_RESOURCEMANAGER_UI_PORT=8088
+    volumes:
+      - hadoop_data:/opt/hadoop/data
+      - lancedb_data:/opt/lancedb_data
+      - ./python_apps:/home/hadoop/python_apps
+    restart: unless-stopped
+
+volumes:
+  hadoop_data:
+  lancedb_data:
