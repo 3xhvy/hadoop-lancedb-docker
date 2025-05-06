@@ -28,10 +28,24 @@ ENV HADOOP_HOME=/opt/hadoop
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
-# Configure SSH for Hadoop
+# Configure SSH for Hadoop - IMPROVED SETUP
 RUN mkdir -p /var/run/sshd && \
     echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config && \
-    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+    echo "PermitRootLogin yes" >> /etc/ssh/sshd_config && \
+    # Create SSH directory and set permissions
+    mkdir -p /root/.ssh && \
+    # Generate SSH key pair
+    ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa && \
+    # Add public key to authorized_keys
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys && \
+    # Set proper permissions
+    chmod 700 /root/.ssh && \
+    chmod 600 /root/.ssh/authorized_keys && \
+    # Configure SSH to not check host keys for localhost
+    echo "Host localhost" > /root/.ssh/config && \
+    echo "  StrictHostKeyChecking no" >> /root/.ssh/config && \
+    echo "  UserKnownHostsFile=/dev/null" >> /root/.ssh/config && \
+    chmod 600 /root/.ssh/config
 
 # Configure Hadoop for standalone operation
 RUN mkdir -p $HADOOP_HOME/data/namenode $HADOOP_HOME/data/datanode && \
