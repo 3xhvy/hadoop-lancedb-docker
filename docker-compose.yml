@@ -1,20 +1,27 @@
 services:
-  hadoop:
+  hadoop-spark:
     build:
-        context: .
-        dockerfile: Dockerfile
-    image: custom-hadoop:latest
-    container_name: custom-hadoop
+      context: .
+      dockerfile: Dockerfile
+    image: custom-hadoop-spark:latest
+    container_name: hadoop-spark
+    hostname: hadoop-spark
     ports:
+      # Hadoop ports
       - "9870:9870"   # NameNode UI
       - "9864:9864"   # DataNode UI
       - "9000:9000"   # HDFS
       - "8088:8088"   # YARN ResourceManager UI
+      # Spark ports
+      - "8080:8080"   # Spark Master Web UI
+      - "7077:7077"   # Spark Master Port
+      - "8081:8081"   # Spark Worker Web UI
     environment:
       - HADOOP_MODE=single
-      - HDFS_NAMENODE_HTTP_PORT_NUMBER=9870
-      - HDFS_DATANODE_HTTP_PORT_NUMBER=9864
-      - YARN_RESOURCEMANAGER_UI_PORT=8088
+      - SPARK_WORKER_MEMORY=4G
+      - SPARK_WORKER_CORES=2
+      - PYSPARK_PYTHON=/usr/bin/python3.10
+      - PYSPARK_DRIVER_PYTHON=/usr/bin/python3.10
     volumes:
       - hadoop_data:/opt/hadoop/data
       - lancedb_data:/opt/lancedb_data

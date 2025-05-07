@@ -17,6 +17,7 @@ def main():
     print("Initializing Spark with Hadoop configuration...")
     spark = SparkSession.builder \
         .appName("Hadoop-LanceDB-Integration") \
+        .master("spark://172.18.0.2:7077") \
         .config("spark.hadoop.fs.defaultFS", "hdfs://localhost:9000") \
         .getOrCreate()
 
